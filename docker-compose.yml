@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  tn-pipeline:
+    build: 
+      context: .
+      cache_from:
+         - tn-pipeline:latest
+    container_name: megh-pipeline
+    volumes:
+      - .:/tn-pipeline
+    working_dir: /tn-pipeline
+    env_file:
+      - .env
+    environment:
+      - DVC_ROOT=/tn-pipeline
+    command: uv run dvc repro
+
+
+
+
