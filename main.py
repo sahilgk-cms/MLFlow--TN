@@ -37,8 +37,8 @@ ML_CONFIG = load_yaml_config(args.ml_config)
 
 ML_CONFIG["use_gpu"] = detect_gpu()["available"]
 
-for key, ranges in FEATURE_CONFIG["bucket_defs"].items():
-    FEATURE_CONFIG["bucket_defs"][key] = [tuple(r) for r in ranges]
+# for key, ranges in FEATURE_CONFIG["bucket_defs"].items():
+#     FEATURE_CONFIG["bucket_defs"][key] = [tuple(r) for r in ranges]
 
 logger = get_logger(__name__)
 
