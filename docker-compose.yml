@@ -6,7 +6,7 @@ services:
       context: .
       cache_from:
          - tn-pipeline:latest
-    container_name: megh-pipeline
+    container_name: tn-pipeline
     volumes:
       - .:/tn-pipeline
     working_dir: /tn-pipeline
