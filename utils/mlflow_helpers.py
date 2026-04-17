@@ -80,6 +80,7 @@ def safe_end_run():
         except Exception:
             pass
 
+        
 def register_model_with_data_tags(client,
                                  training_run_id: str,
                                   experiment_name: str,
@@ -95,6 +96,7 @@ def register_model_with_data_tags(client,
     registered_model_name = f"{experiment_name}_{model_name}"
     preprocessor_name = ml_config.get("preprocessor_name")
     optimizer_type = ml_config.get("optimizer_type")
+    high_risk_limit = ml_config.get("high_risk_limit")
 
     model_uri = f"runs:/{training_run_id}/model"
     mv = mlflow.register_model(model_uri=model_uri, name= registered_model_name)
@@ -162,13 +164,29 @@ def register_model_with_data_tags(client,
         value=optimizer_type
     )
 
+    client.set_model_version_tag(
+        name= registered_model_name,
+        version=mv.version,
+        key="high_risk_limit",
+        value=high_risk_limit
+    )
+
+
     for metric_name, value in eval_metric_results.items():
-        client.set_model_version_tag(
-            name=registered_model_name,
-            version=mv.version,
-            key=f"test_{metric_name}",
-            value=str(value)
+        if metric_name in ["precision", "recall"]:
+            client.set_model_version_tag(
+                name=registered_model_name,
+                version=mv.version,
+                key=f"{metric_name}",
+                value=str(value)
         )
+        else:
+            client.set_model_version_tag(
+                name=registered_model_name,
+                version=mv.version,
+                key=f"test_{metric_name}",
+                value=str(value)
+            )
     return mv
 
 def load_model_from_registry(
