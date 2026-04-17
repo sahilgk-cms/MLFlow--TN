@@ -43,7 +43,9 @@ ML_CONFIG["use_gpu"] = detect_gpu()["available"]
 logger = get_logger(__name__)
 
 def main():
-   
+    os.environ["MLFLOW_ARTIFACT_ROOT"] = os.path.join(os.getcwd(), "mlruns")
+    mlflow.set_tracking_uri(MLFLOW_URI)
+    logger.info(f"TRACKING URI {mlflow.get_tracking_uri()}")
 
     engine = get_engine(db_user=DB_USER, db_password=DB_PASSWORD, db_host=DB_HOST,
                         db_port=DB_PORT, db_name=DB_NAME)
@@ -51,8 +53,7 @@ def main():
     logger.info("Building features..")
     statewise_final = build_features(engine=engine, database_config=DATABASE_CONFIG,
                                     feature_config=FEATURE_CONFIG)
-    log_parquet(df=statewise_final, filename=FEATURES_ARTIFACT,
-                         artifact_path="features")
+    
     
     logger.info("Building data...")
     output = build_data(df=statewise_final, data_config=DATA_CONFIG)
@@ -88,6 +89,9 @@ def main():
     with mlflow.start_run(run_name = f"{experiment_name}_pipeline_root_{today_date}") as pipeline_root:
         log_git_to_mlflow()
         log_dvc_info()
+
+        log_parquet(df=statewise_final, filename=FEATURES_ARTIFACT,
+                         artifact_path="features")
 
         pipeline_root_run_id = pipeline_root.info.run_id
         tags_dict = { 
