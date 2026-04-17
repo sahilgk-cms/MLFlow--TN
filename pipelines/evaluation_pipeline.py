@@ -1,6 +1,6 @@
 import pandas as pd
 import mlflow
-from pipelines.prediction_builder import build_prediction_data
+from pipelines.prediction_builder import build_prediction_data, calc_high_risk_cases, calc_precision_recall
 from utils.artifact_logger import log_parquet
 from metrics.factory import MetricFactory
 
@@ -16,6 +16,7 @@ def run_evaluation_pipeline(
     ):
     model_name = ml_config.get("model_name")
     run_type = ml_config.get("evaluation_run_type")
+    high_risk_limit = ml_config.get("high_risk_limit")
 
     with mlflow.start_run(run_name=f"{model_name}_{run_type}", nested=True):
 
@@ -44,6 +45,15 @@ def run_evaluation_pipeline(
                                                best_cv_score,
                                                test_score,
                                                metric_name=primary_metric)
+
+        predictions_df = calc_high_risk_cases(predictions_df, high_risk_limit)
+
+        precision, recall = calc_precision_recall(predictions_df)
+
+        eval_metric_results["precision"] = precision
+        eval_metric_results["recall"] = recall
+        mlflow.log_metric("precision", eval_metric_results["precision"])
+        mlflow.log_metric("recall", eval_metric_results["recall"])
 
         log_parquet(
             df=predictions_df,
