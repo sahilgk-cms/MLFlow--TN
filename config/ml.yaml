@@ -10,3 +10,5 @@ evaluation_run_type: evaluation
 
 cv_type: TimeSeriesSplit
 optimizer_type: optuna
+
+high_risk_limit: 3
