@@ -1,6 +1,6 @@
 import mlflow
 from mlflow.tracking import MlflowClient
-from config.env import MLFLOW_URI, DVC_STAGE
+from config.env import MLFLOW_URI
 import pandas as pd
 from pathlib import Path
 from typing import Dict
