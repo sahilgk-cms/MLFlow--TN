@@ -1,11 +1,20 @@
 import os
+from pathlib import Path
 
-CURRENT_DIR = os.getcwd()
+#CURRENT_DIR = os.getcwd()
+CURRENT_DIR = Path(__file__).resolve().parents[1]
+
 LOGS_DIRECTORY = os.path.join(CURRENT_DIR, "logs")
 
+SEARCH_SPACE_PATH = os.path.join(CURRENT_DIR, "config", "search_spaces.yml")
+VILLAGE_EMBEDDINGS_PATH = os.path.join(CURRENT_DIR, "embeddings", "emb_village.csv")
+
+
+print(CURRENT_DIR)
 
 
 ARTIFACTS_FOLDER = os.path.join(CURRENT_DIR, "artifacts")
+os.makedirs(ARTIFACTS_FOLDER, exist_ok=True)
 FEATURES_ARTIFACT = os.path.join(ARTIFACTS_FOLDER, "features.parquet")
 DATA_ARTIFACT = os.path.join(ARTIFACTS_FOLDER, "data.pkl")
 RUN_ARTIFACT = os.path.join(ARTIFACTS_FOLDER, "run_id.txt")

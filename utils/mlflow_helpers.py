@@ -1,13 +1,13 @@
 import mlflow
 from mlflow.tracking import MlflowClient
-from config.env import MLFLOW_URI
+from config.env import MLFLOW_URI, DVC_STAGE
 import pandas as pd
 from pathlib import Path
 from typing import Dict
 import time
+from utils.helpers import safe_tag_value
 import subprocess
 import os
-from utils.helpers import safe_tag_value
 
 
 def get_git_info():
@@ -38,6 +38,7 @@ def log_git_to_mlflow():
     for key, value in git_info.items():
         mlflow.set_tag(key, value)
 
+
 def log_dvc_info():
     try:
         if os.path.exists("dvc.lock"):
@@ -49,10 +50,11 @@ def log_dvc_info():
     except Exception as e:
         mlflow.set_tag("dvc_logging_error", str(e))
 
+        
+
 def initiate_client(mlflow_uri: str):
     client = MlflowClient(tracking_uri=mlflow_uri)
     return client
-
 
 
 def start_mlflow_experiment(mlflow_uri: str, experiment_name: str, artifact_location: str=None):
@@ -72,6 +74,7 @@ def start_mlflow_experiment(mlflow_uri: str, experiment_name: str, artifact_loca
 
     return mlflow.get_experiment(experiment_id)
 
+
 def safe_end_run():
     active_run = mlflow.active_run()
     if active_run:
@@ -80,7 +83,7 @@ def safe_end_run():
         except Exception:
             pass
 
-        
+
 def register_model_with_data_tags(client,
                                  training_run_id: str,
                                   experiment_name: str,
@@ -170,6 +173,14 @@ def register_model_with_data_tags(client,
         key="high_risk_limit",
         value=high_risk_limit
     )
+
+    client.set_model_version_tag(
+        name= registered_model_name,
+        version=mv.version,
+        key="model_name",
+        value=model_name
+    )
+
 
 
     for metric_name, value in eval_metric_results.items():
