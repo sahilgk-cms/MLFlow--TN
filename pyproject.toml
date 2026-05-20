@@ -1,5 +1,5 @@
 [project]
-name = "tn-mlflow"
+name = "megh-mlflow"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,6 +7,7 @@ requires-python = ">=3.11,<3.13"
 dependencies = [
     "boto3==1.42.85",
     "dvc==3.67.1",
+    "dvc-s3==3.3.0",
     "openpyxl==3.1.5",
     "pandas==2.3.3",
     "psycopg2-binary",
@@ -17,5 +18,4 @@ dependencies = [
     "shap==0.51.0",
     "optuna==4.7.0",
     "catboost==1.2.10"
-
 ]
